@@ -36,6 +36,7 @@ fi
 
 if [ "${MODS_BACKUP}" != "" ]; then 
   if [ -d "/minecraft/mods/lost+found"]; then
+    rm -r "/minecraft/mods/lost+found"
     if [ ! "$(ls -A /minecraft/mods)" ]; then 
       echo "Installing default mods ${MODS_BACKUP}"
       
