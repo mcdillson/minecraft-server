@@ -2,17 +2,30 @@
 
 # Add the default mods, plugins and world
 if [ "${WORLD_BACKUP}" != "" ]; then
-  if [ ! "$(ls -A /minecraft/world)" ]; then 
+  if [ ! "$(ls -A /minecraft/worlds)" ]; then 
     echo "Installing default world ${WORLD_BACKUP}"
     
-    if [ ! -d "/minecraft/world" ]; then
-      mkdir /minecraft/world
+    if [ ! -d "/minecraft/worlds" ]; then
+      mkdir /minecraft/worlds
     fi
    
     cd /tmp && \
       wget -O world.tar.gz ${WORLD_BACKUP} && \
-      tar -C /minecraft/world -xzf world.tar.gz && \
+      tar -C /minecraft/worlds -xzf world.tar.gz && \
       rm world.tar.gz
+
+    # Create symlinks for the world, world_nether, and world_the_end
+    if [ -d "/minecraft/worlds/world" ]; then
+      ln -s /minecraft/worlds/world /minecraft/world
+    fi
+    
+    if [ -d "/minecraft/worlds/world_nether" ]; then
+      ln -s /minecraft/worlds/world_nether /minecraft/world_nether
+    fi
+    
+    if [ -d "/minecraft/worlds/world_the_end" ]; then
+      ln -s /minecraft/worlds/world_the_end /minecraft/world_the_end
+    fi
   fi
 fi
 
@@ -52,6 +65,7 @@ if [ ! -d "/minecraft/config" ]; then
   mkdir /minecraft/config
 fi
 
+# Creating default config files
 if [ ! -f "/minecraft/config/banned-ips.json" ]; then
   echo "[]" >> /minecraft/config/banned-ips.json
 fi
@@ -70,20 +84,6 @@ fi
 
 if [ ! -f "/minecraft/config/bukkit.yml" ]; then
   cat <<EOF > /minecraft/config/bukkit.yml
-    # This is the main configuration file for Bukkit.
-    # As you can see, there's actually not that much to configure without any plugins.
-    # For a reference for any variable inside this file, check out the Bukkit Wiki at
-    # https://www.spigotmc.org/go/bukkit-yml
-    #
-    # If you need help on this file, feel free to join us on irc or leave a message
-    # on the forums asking for advice.
-    #
-    # IRC: #spigot @ irc.spi.gt
-    #    (If this means nothing to you, just go to https://www.spigotmc.org/go/irc )
-    # Forums: https://www.spigotmc.org/
-    # Bug tracker: https://www.spigotmc.org/go/bugs
-    
-    
     settings:
       allow-end: true
       warn-on-overload: true
@@ -114,6 +114,7 @@ if [ ! -f "/minecraft/config/bukkit.yml" ]; then
 EOF
 fi
 
+# Create symlinks for config files
 [ -f /minecraft/banned-ips.json ] || ln -s /minecraft/config/banned-ips.json /minecraft/banned-ips.json
 [ -f /minecraft/banned-players.json ] || ln -s /minecraft/config/banned-players.json /minecraft/banned-players.json
 [ -f /minecraft/usercache.json ] || ln -s /minecraft/config/usercache.json /minecraft/usercache.json
@@ -122,7 +123,6 @@ fi
 [ -f /minecraft/bukkit.yml ] || ln -s /minecraft/config/bukkit.yml /minecraft/bukkit.yml
 
 # Configure the properties
-# Echo the file as it has embedded environment variables
 eval "echo \"$(cat /server.properties)\"" > /minecraft/server.properties
 
 # Start the server
