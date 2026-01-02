@@ -35,17 +35,19 @@ if [ "${WORLD_BACKUP}" != "" ]; then
 fi
 
 if [ "${MODS_BACKUP}" != "" ]; then 
-  if [ ! "$(ls -A /minecraft/mods)" ]; then 
-    echo "Installing default mods ${MODS_BACKUP}"
-    
-    if [ ! -d "/minecraft/mods" ]; then
-      mkdir /minecraft/mods
-    fi
+  if [ -d "/minecraft/mods/lost+found"]; then
+    if [ ! "$(ls -A /minecraft/mods)" ]; then 
+      echo "Installing default mods ${MODS_BACKUP}"
+      
+      if [ ! -d "/minecraft/mods" ]; then
+        mkdir /minecraft/mods
+      fi
 
-    cd /tmp && \
-      wget -O mods.tar.gz ${MODS_BACKUP} && \
-      tar -C /minecraft/mods -xzf mods.tar.gz && \
-      rm mods.tar.gz
+      cd /tmp && \
+        wget -O mods.tar.gz ${MODS_BACKUP} && \
+        tar -C /minecraft/mods -xzf mods.tar.gz && \
+        rm mods.tar.gz
+    fi
   fi
 fi
 
@@ -128,7 +130,8 @@ fi
 [ -f /minecraft/bukkit.yml ] || ln -s /minecraft/config/bukkit.yml /minecraft/bukkit.yml
 
 # Configure the properties
-eval "echo \"$(cat /server.properties)\"" > /minecraft/server.properties
+eval "echo \"$(cat /server.properties)\"" > /minecraft/config/server.properties
+ln -s /minecraft/config/server.properties /minecraft/server.properties
 
 # Start the server
 cd /minecraft
