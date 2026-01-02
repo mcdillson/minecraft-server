@@ -2,7 +2,7 @@
 
 # Add the default mods, plugins and world
 if [ "${WORLD_BACKUP}" != "" ]; then
-  if [ ! "$(ls -A /minecraft/worlds)" ]; then 
+  if [ ! -d "/minecraft/worlds/world" ]; then 
     echo "Installing default world ${WORLD_BACKUP}"
     
     if [ ! -d "/minecraft/worlds" ]; then
@@ -13,20 +13,25 @@ if [ "${WORLD_BACKUP}" != "" ]; then
       wget -O world.tar.gz ${WORLD_BACKUP} && \
       tar -C /minecraft/worlds -xzf world.tar.gz && \
       rm world.tar.gz
-
-    # Create symlinks for the world, world_nether, and world_the_end
-    if [ -d "/minecraft/worlds/world" ]; then
-      ln -s /minecraft/worlds/world /minecraft/world
-    fi
-    
-    if [ -d "/minecraft/worlds/world_nether" ]; then
-      ln -s /minecraft/worlds/world_nether /minecraft/world_nether
-    fi
-    
-    if [ -d "/minecraft/worlds/world_the_end" ]; then
-      ln -s /minecraft/worlds/world_the_end /minecraft/world_the_end
-    fi
   fi
+
+  # Create symlinks for the world, world_nether, and world_the_end
+  if [ ! -d "/minecraft/worlds/world" ]; then
+    mkdir /minecraft/worlds/world
+  fi
+  
+  if [ ! -d "/minecraft/worlds/world_nether" ]; then
+    mkdir /minecraft/worlds/world_nether
+  fi
+  
+  if [ ! -d "/minecraft/worlds/world_the_end" ]; then
+    mkdir /minecraft/worlds/world_the_end
+  fi
+
+  ln -s /minecraft/worlds/world /minecraft/world
+  ln -s /minecraft/worlds/world_nether /minecraft/world_nether
+  ln -s /minecraft/worlds/world_the_end /minecraft/world_the_end
+
 fi
 
 if [ "${MODS_BACKUP}" != "" ]; then 
